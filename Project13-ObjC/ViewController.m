@@ -22,6 +22,18 @@
     self.currentFilter = [CIFilter filterWithName:@"CISepiaTone"];
 }
 
+#pragma mark - Helper
+
+- (void)applyProcessing {
+    [self.currentFilter setValue:[NSNumber numberWithFloat:self.intensitySlider.value] forKey:kCIInputIntensityKey];
+    CIImage *image = [self.currentFilter outputImage];
+    struct CGImage *cgImageRef = [self.context createCGImage:image fromRect:[image extent]];
+    
+    if (cgImageRef) {
+        self.imageView.image = [[UIImage alloc]initWithCGImage:cgImageRef];
+    }
+}
+
 #pragma mark - Actions
 
 - (IBAction)changeFilterAction:(UIButton *)sender {
@@ -31,6 +43,7 @@
 }
 
 - (IBAction)intensitySliderChanged:(UISlider *)sender {
+    [self applyProcessing];
 }
 
 - (IBAction)importImageAction:(UIBarButtonItem *)sender {
@@ -49,6 +62,10 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
     if (image) {
         self.currentImage = image;
         [self dismissViewControllerAnimated:YES completion:nil];
+        
+        CIImage *beginImage = [[CIImage alloc]initWithImage:image];
+        [self.currentFilter setValue:beginImage forKey:kCIInputImageKey];
+        [self applyProcessing];
     }
 }
 
