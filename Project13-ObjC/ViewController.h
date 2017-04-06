@@ -16,6 +16,7 @@
 @property UIImage *currentImage;
 @property (weak, nonatomic) IBOutlet UIImageView *imageView;
 @property (weak, nonatomic) IBOutlet UISlider *intensitySlider;
+@property (weak, nonatomic) IBOutlet UILabel *placeHolderLabel;
 
 - (IBAction)changeFilterAction:(UIButton *)sender;
 - (IBAction)saveAction:(UIButton *)sender;

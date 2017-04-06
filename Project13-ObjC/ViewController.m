@@ -38,7 +38,8 @@
     }
     if ([inputKeys containsObject:kCIInputCenterKey]) {
         [self.currentFilter setValue:[CIVector
-                                      vectorWithX:self.currentImage.size.width / 2 Y:self.currentImage.size.height / 2] forKey:kCIInputCenterKey];
+                                      vectorWithX:self.currentImage.size.width / 2 Y:self.currentImage.size.height / 2]
+                              forKey:kCIInputCenterKey];
     }
     
     CIImage *outputImage = [self.currentFilter outputImage];
@@ -77,7 +78,7 @@
 
 
 - (IBAction)saveAction:(UIButton *)sender {
-    
+    UIImageWriteToSavedPhotosAlbum(self.imageView.image, self, @selector(image:didFinishSavingWithError:withContextInfo:), nil);
 }
 
 - (IBAction)intensitySliderChanged:(UISlider *)sender {
@@ -93,7 +94,17 @@
 
 #pragma mark - Picker Delegate
 
-//- (void)image:(UIImage*)image didFinishSavingWithError:(NSError*)error withContextInfo: (rawpoi)
+- (void)image:(UIImage*)image didFinishSavingWithError:(NSError*)error withContextInfo: (void  * _Nullable )contextInfo {
+    if (error) {
+        NSLog(@"Could not save: %@", error.localizedDescription);
+    } else {
+        UIAlertController *alertController = [UIAlertController
+                                              alertControllerWithTitle:@"Saved!"
+                                              message:@"Your new masterpiece was saved to Photos!" preferredStyle:UIAlertControllerStyleAlert];
+        [alertController addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
+}
 
 - (void)imagePickerController:(UIImagePickerController *)picker
 didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
@@ -101,6 +112,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
     
     if (image) {
         self.currentImage = image;
+        [self.placeHolderLabel setHidden:YES];
         [self dismissViewControllerAnimated:YES completion:nil];
         
         CIImage *beginImage = [[CIImage alloc]initWithImage:image];
