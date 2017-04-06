@@ -10,7 +10,7 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--YACIFP-->
+        <!--PhotoGram-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
@@ -114,7 +114,7 @@
                             <constraint firstItem="tPR-n6-2X7" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="kbV-jb-Xcy"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="YACIFP" id="bEA-qS-j3n">
+                    <navigationItem key="navigationItem" title="PhotoGram" id="bEA-qS-j3n">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="bd2-iO-m7y">
                             <connections>
                                 <action selector="importImageAction:" destination="BYZ-38-t0r" id="kxd-s8-G6M"/>

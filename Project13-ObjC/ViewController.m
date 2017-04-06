@@ -22,6 +22,13 @@
     self.currentFilter = [CIFilter filterWithName:@"CISepiaTone"];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if (self.currentImage) {
+        [self.placeHolderLabel setHidden:YES];
+    }
+}
+
 #pragma mark - Helper
 
 - (void)applyProcessing {
@@ -94,7 +101,7 @@
 
 #pragma mark - Picker Delegate
 
-- (void)image:(UIImage*)image didFinishSavingWithError:(NSError*)error withContextInfo: (void  * _Nullable )contextInfo {
+- (void)image:(UIImage*)image didFinishSavingWithError:(NSError*)error withContextInfo: (void  * _Nullable)contextInfo {
     if (error) {
         NSLog(@"Could not save: %@", error.localizedDescription);
     } else {
@@ -112,7 +119,7 @@ didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
     
     if (image) {
         self.currentImage = image;
-        [self.placeHolderLabel setHidden:YES];
+        
         [self dismissViewControllerAnimated:YES completion:nil];
         
         CIImage *beginImage = [[CIImage alloc]initWithImage:image];
