@@ -25,21 +25,59 @@
 #pragma mark - Helper
 
 - (void)applyProcessing {
-    [self.currentFilter setValue:[NSNumber numberWithFloat:self.intensitySlider.value] forKey:kCIInputIntensityKey];
-    CIImage *image = [self.currentFilter outputImage];
-    struct CGImage *cgImageRef = [self.context createCGImage:image fromRect:[image extent]];
     
-    if (cgImageRef) {
-        self.imageView.image = [[UIImage alloc]initWithCGImage:cgImageRef];
+    NSArray *inputKeys = [self.currentFilter inputKeys];
+    if ([inputKeys containsObject:kCIInputIntensityKey]) {
+        [self.currentFilter setValue:[NSNumber numberWithFloat:[self.intensitySlider value]] forKey:kCIInputIntensityKey];
+    }
+    if ([inputKeys containsObject:kCIInputRadiusKey]) {
+        [self.currentFilter setValue:[NSNumber numberWithFloat:[self.intensitySlider value] * 200] forKey:kCIInputRadiusKey];
+    }
+    if ([inputKeys containsObject:kCIInputScaleKey]) {
+        [self.currentFilter setValue:[NSNumber numberWithFloat:[self.intensitySlider value] * 10] forKey:kCIInputScaleKey];
+    }
+    if ([inputKeys containsObject:kCIInputCenterKey]) {
+        [self.currentFilter setValue:[CIVector
+                                      vectorWithX:self.currentImage.size.width / 2 Y:self.currentImage.size.height / 2] forKey:kCIInputCenterKey];
+    }
+    
+    CIImage *outputImage = [self.currentFilter outputImage];
+    struct CGImage *newCGImage = [self.context createCGImage:outputImage fromRect:[outputImage extent]];
+    
+    if (newCGImage) {
+        self.imageView.image = [[UIImage alloc]initWithCGImage:newCGImage];
     }
 }
 
 #pragma mark - Actions
 
 - (IBAction)changeFilterAction:(UIButton *)sender {
+    void(^setFilter)(UIAlertAction*) = ^(UIAlertAction* action) {
+        ViewController * __weak weakSelf = self;
+        if (weakSelf.currentImage) {
+            weakSelf.currentFilter = [CIFilter filterWithName:action.title];
+            CIImage *beginImage = [[CIImage alloc]initWithImage:weakSelf.currentImage];
+            [weakSelf.currentFilter setValue:beginImage forKey:kCIInputImageKey];
+            [weakSelf applyProcessing];
+        }
+    };
+    UIAlertController *alertController = [UIAlertController
+                                          alertControllerWithTitle:@"Choose filter"
+                                          message:nil preferredStyle:UIAlertControllerStyleActionSheet];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"CIBumpDistortion" style:UIAlertActionStyleDefault handler:setFilter]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"CIGaussianBlur" style:UIAlertActionStyleDefault handler:setFilter]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"CIPixellate" style:UIAlertActionStyleDefault handler:setFilter]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"CISepiaTone" style:UIAlertActionStyleDefault handler:setFilter]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"CITwirlDistortion" style:UIAlertActionStyleDefault handler:setFilter]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"CIUnsharpMask" style:UIAlertActionStyleDefault handler:setFilter]];
+    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [self presentViewController:alertController animated:YES completion:nil];
+    
 }
 
+
 - (IBAction)saveAction:(UIButton *)sender {
+    
 }
 
 - (IBAction)intensitySliderChanged:(UISlider *)sender {
@@ -54,6 +92,8 @@
 }
 
 #pragma mark - Picker Delegate
+
+//- (void)image:(UIImage*)image didFinishSavingWithError:(NSError*)error withContextInfo: (rawpoi)
 
 - (void)imagePickerController:(UIImagePickerController *)picker
 didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info {
